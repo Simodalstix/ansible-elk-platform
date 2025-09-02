@@ -1,0 +1,29 @@
+---
+- name: Install Filebeat
+  apt:
+    name: filebeat={{ elk_version }}
+    state: present
+  notify: restart filebeat
+
+- name: Create log directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: adm
+    mode: '0755'
+  loop:
+    - /var/log/sample-app
+
+- name: Configure Filebeat
+  template:
+    src: filebeat.yml.j2
+    dest: /etc/filebeat/filebeat.yml
+    backup: yes
+  notify: restart filebeat
+
+- name: Start and enable Filebeat
+  systemd:
+    name: filebeat
+    state: started
+    enabled: yes

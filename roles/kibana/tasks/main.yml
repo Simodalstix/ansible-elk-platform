@@ -1,0 +1,28 @@
+---
+- name: Install Kibana
+  apt:
+    name: kibana={{ elk_version }}
+    state: present
+  notify: restart kibana
+
+- name: Configure Kibana
+  template:
+    src: kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+    backup: yes
+  notify: restart kibana
+
+- name: Start and enable Kibana
+  systemd:
+    name: kibana
+    state: started
+    enabled: yes
+
+- name: Wait for Kibana to start
+  uri:
+    url: "http://localhost:5601"
+    method: GET
+  register: result
+  until: result.status == 200
+  retries: 30
+  delay: 10

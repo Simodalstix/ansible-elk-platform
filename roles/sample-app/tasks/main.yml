@@ -1,0 +1,65 @@
+---
+- name: Install Node.js
+  apt:
+    name:
+      - nodejs
+      - npm
+      - nginx
+    state: present
+
+- name: Create app directory
+  file:
+    path: /opt/sample-app
+    state: directory
+    owner: www-data
+    group: www-data
+
+- name: Create sample Node.js app
+  template:
+    src: app.js.j2
+    dest: /opt/sample-app/app.js
+    owner: www-data
+    group: www-data
+  notify: restart sample-app
+
+- name: Create package.json
+  template:
+    src: package.json.j2
+    dest: /opt/sample-app/package.json
+    owner: www-data
+    group: www-data
+
+- name: Install app dependencies
+  npm:
+    path: /opt/sample-app
+    state: present
+
+- name: Configure Nginx
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/sample-app
+  notify: restart nginx
+
+- name: Enable Nginx site
+  file:
+    src: /etc/nginx/sites-available/sample-app
+    dest: /etc/nginx/sites-enabled/sample-app
+    state: link
+  notify: restart nginx
+
+- name: Create systemd service
+  template:
+    src: sample-app.service.j2
+    dest: /etc/systemd/system/sample-app.service
+  notify:
+    - reload systemd
+    - restart sample-app
+
+- name: Start services
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - nginx
+    - sample-app

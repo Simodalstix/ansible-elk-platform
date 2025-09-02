@@ -1,0 +1,16 @@
+---
+# ELK Stack Configuration
+elk_version: "8.11.0"
+elastic_password: "{{ vault_elastic_password | default('changeme') }}"
+
+# Network Configuration
+elasticsearch_host: "{{ hostvars['elk-master']['ansible_host'] }}"
+logstash_host: "{{ hostvars['elk-logstash']['ansible_host'] }}"
+
+# Security
+enable_tls: true
+ca_cert_path: "/etc/elasticsearch/certs/ca.crt"
+
+# Index Management
+index_retention_days: 30
+index_rollover_size: "50gb"

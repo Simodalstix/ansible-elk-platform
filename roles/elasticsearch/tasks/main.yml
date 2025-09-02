@@ -1,0 +1,38 @@
+---
+- name: Install Elasticsearch
+  apt:
+    name: elasticsearch={{ elk_version }}
+    state: present
+  notify: restart elasticsearch
+
+- name: Configure Elasticsearch
+  template:
+    src: elasticsearch.yml.j2
+    dest: /etc/elasticsearch/elasticsearch.yml
+    backup: yes
+  notify: restart elasticsearch
+
+- name: Set Elasticsearch heap size
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options.d/heap.options
+    line: "{{ item }}"
+    create: yes
+  loop:
+    - "-Xms2g"
+    - "-Xmx2g"
+  notify: restart elasticsearch
+
+- name: Start and enable Elasticsearch
+  systemd:
+    name: elasticsearch
+    state: started
+    enabled: yes
+
+- name: Wait for Elasticsearch to start
+  uri:
+    url: "http://localhost:9200"
+    method: GET
+  register: result
+  until: result.status == 200
+  retries: 30
+  delay: 10

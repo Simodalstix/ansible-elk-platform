@@ -1,0 +1,14 @@
+cluster.name: elk-cluster
+node.name: {{ inventory_hostname }}
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch
+network.host: 0.0.0.0
+http.port: 9200
+discovery.type: single-node
+
+# Security
+xpack.security.enabled: false
+xpack.security.enrollment.enabled: false
+
+# Index lifecycle
+action.destructive_requires_name: true

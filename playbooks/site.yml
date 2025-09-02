@@ -1,0 +1,36 @@
+---
+- name: Deploy ELK Stack Infrastructure
+  hosts: all
+  become: yes
+  roles:
+    - common
+
+- name: Deploy Elasticsearch
+  hosts: elasticsearch
+  become: yes
+  roles:
+    - elasticsearch
+
+- name: Deploy Kibana
+  hosts: kibana
+  become: yes
+  roles:
+    - kibana
+
+- name: Deploy Logstash
+  hosts: logstash
+  become: yes
+  roles:
+    - logstash
+
+- name: Deploy Sample Application
+  hosts: sample_app
+  become: yes
+  roles:
+    - sample-app
+
+- name: Deploy Filebeat
+  hosts: filebeat
+  become: yes
+  roles:
+    - filebeat

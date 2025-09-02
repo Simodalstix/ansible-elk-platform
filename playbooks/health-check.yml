@@ -1,0 +1,34 @@
+---
+- name: ELK Stack Health Check
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Check Elasticsearch health
+      uri:
+        url: "http://{{ elasticsearch_host }}:9200/_cluster/health"
+        method: GET
+      register: es_health
+      when: inventory_hostname in groups['elasticsearch']
+
+    - name: Check Kibana health
+      uri:
+        url: "http://{{ ansible_host }}:5601/api/status"
+        method: GET
+      register: kibana_health
+      when: inventory_hostname in groups['kibana']
+
+    - name: Check Logstash service
+      systemd:
+        name: logstash
+      register: logstash_status
+      when: inventory_hostname in groups['logstash']
+
+    - name: Check Filebeat service
+      systemd:
+        name: filebeat
+      register: filebeat_status
+      when: inventory_hostname in groups['filebeat']
+
+    - name: Display health status
+      debug:
+        msg: "{{ inventory_hostname }} - All services healthy"

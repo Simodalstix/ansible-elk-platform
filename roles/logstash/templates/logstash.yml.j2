@@ -1,0 +1,5 @@
+node.name: {{ inventory_hostname }}
+path.data: /var/lib/logstash
+pipeline.workers: 2
+pipeline.batch.size: 125
+path.logs: /var/log/logstash

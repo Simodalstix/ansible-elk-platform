@@ -1,0 +1,30 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/sample-app/*.log
+  fields:
+    log_type: app
+  fields_under_root: false
+
+- type: log
+  enabled: true
+  paths:
+    - /var/log/nginx/sample-app.access.log
+  fields:
+    log_type: nginx
+  fields_under_root: false
+
+output.logstash:
+  hosts: ["{{ logstash_host }}:5044"]
+
+processors:
+- add_host_metadata:
+    when.not.contains.tags: forwarded
+
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7

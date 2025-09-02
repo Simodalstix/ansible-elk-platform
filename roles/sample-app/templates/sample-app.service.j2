@@ -1,0 +1,15 @@
+[Unit]
+Description=Sample ELK App
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/sample-app
+ExecStart=/usr/bin/node app.js
+Restart=always
+StandardOutput=append:/var/log/sample-app/app.log
+StandardError=append:/var/log/sample-app/error.log
+
+[Install]
+WantedBy=multi-user.target

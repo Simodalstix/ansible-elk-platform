@@ -1,0 +1,37 @@
+const express = require('express');
+const app = express();
+const port = 3000;
+
+app.use(express.json());
+
+const logEvent = (level, message, data = {}) => {
+  console.log(JSON.stringify({
+    timestamp: new Date().toISOString(),
+    level,
+    message,
+    ...data
+  }));
+};
+
+app.get('/', (req, res) => {
+  logEvent('info', 'Homepage accessed', { ip: req.ip });
+  res.json({ message: 'Sample ELK App', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/users', (req, res) => {
+  logEvent('info', 'Users API called');
+  res.json([{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }]);
+});
+
+app.get('/error', (req, res) => {
+  logEvent('error', 'Simulated error occurred', { error: 'Test error' });
+  res.status(500).json({ error: 'Simulated error' });
+});
+
+setInterval(() => {
+  logEvent('info', 'Heartbeat', { uptime: process.uptime() });
+}, 30000);
+
+app.listen(port, () => {
+  logEvent('info', 'Server started', { port });
+});

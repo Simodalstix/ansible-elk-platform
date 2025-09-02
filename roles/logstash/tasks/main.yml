@@ -1,0 +1,24 @@
+---
+- name: Install Logstash
+  apt:
+    name: logstash=1:{{ elk_version }}-1
+    state: present
+  notify: restart logstash
+
+- name: Configure Logstash pipeline
+  template:
+    src: logstash.conf.j2
+    dest: /etc/logstash/conf.d/main.conf
+  notify: restart logstash
+
+- name: Configure Logstash settings
+  template:
+    src: logstash.yml.j2
+    dest: /etc/logstash/logstash.yml
+  notify: restart logstash
+
+- name: Start and enable Logstash
+  systemd:
+    name: logstash
+    state: started
+    enabled: yes
