@@ -1,7 +1,7 @@
 ---
 - name: Install Elasticsearch
   apt:
-    name: elasticsearch={{ elk_version }}
+    name: elasticsearch
     state: present
   notify: restart elasticsearch
 

@@ -1,7 +1,7 @@
 ---
 - name: Install Logstash
   apt:
-    name: logstash=1:{{ elk_version }}-1
+    name: logstash
     state: present
   notify: restart logstash
 

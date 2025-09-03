@@ -6,9 +6,11 @@ network.host: 0.0.0.0
 http.port: 9200
 discovery.type: single-node
 
-# Security
+# Security - completely disabled
 xpack.security.enabled: false
 xpack.security.enrollment.enabled: false
+xpack.security.http.ssl.enabled: false
+xpack.security.transport.ssl.enabled: false
 
 # Index lifecycle
 action.destructive_requires_name: true

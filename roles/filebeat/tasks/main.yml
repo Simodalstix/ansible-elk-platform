@@ -1,7 +1,7 @@
 ---
 - name: Install Filebeat
   apt:
-    name: filebeat={{ elk_version }}
+    name: filebeat
     state: present
   notify: restart filebeat
 
