@@ -1,0 +1,47 @@
+---
+- name: ELK Infrastructure Validation
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Check disk space (minimum 20GB for ELK)
+      shell: df -h / | awk 'NR==2 {print $4}' | sed 's/G//'
+      register: disk_space
+      failed_when: disk_space.stdout | int < 20
+
+    - name: Check available memory (minimum 4GB for ELK)
+      shell: free -m | awk 'NR==2{printf "%.0f", $2/1024}'
+      register: memory_total
+      failed_when: memory_total.stdout | int < 4
+
+    - name: Test internet connectivity
+      uri:
+        url: https://artifacts.elastic.co
+        method: HEAD
+      timeout: 10
+
+    - name: Test DNS resolution
+      shell: nslookup artifacts.elastic.co
+      register: dns_test
+      failed_when: dns_test.rc != 0
+
+    - name: Check if ports are available
+      wait_for:
+        port: "{{ item }}"
+        host: "{{ ansible_host }}"
+        state: stopped
+        timeout: 5
+      loop:
+        - 9200  # Elasticsearch
+        - 5601  # Kibana
+        - 5044  # Logstash
+        - 80    # Nginx
+      when: inventory_hostname in groups['elk_cluster']
+
+    - name: Display system info
+      debug:
+        msg: |
+          Host: {{ inventory_hostname }}
+          IP: {{ ansible_host }}
+          Disk Space: {{ disk_space.stdout }}GB available
+          Memory: {{ memory_total.stdout }}GB total
+          OS: {{ ansible_distribution }} {{ ansible_distribution_version }}

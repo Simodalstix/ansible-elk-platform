@@ -4,8 +4,8 @@ elk_version: "8.11.0"
 elastic_password: "{{ vault_elastic_password | default('changeme') }}"
 
 # Network Configuration
-elasticsearch_host: "192.168.198.135"
-logstash_host: "192.168.198.143"
+elasticsearch_host: "192.168.198.134"
+logstash_host: "192.168.198.134"
 
 # Security
 enable_tls: true

@@ -1,6 +1,9 @@
-.PHONY: bootstrap deploy health-check clean
+.PHONY: bootstrap deploy health-check clean validate
 
-bootstrap: deploy health-check
+bootstrap: validate deploy health-check
+
+validate:
+	ansible-playbook -i inventories/dev/hosts.yml playbooks/validate.yml
 
 deploy:
 	ansible-playbook -i inventories/dev/hosts.yml playbooks/site.yml
